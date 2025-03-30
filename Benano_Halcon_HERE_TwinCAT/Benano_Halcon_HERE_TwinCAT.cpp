@@ -1,8 +1,8 @@
 ﻿#include <TcAdsDef.h>
 #include <TcAdsAPI.h>
-#include <HalconCpgrrr
+#include <HalconCpp
 #include "benano_init.h"
-#include "benano_halco
+#include "benano_hal
 #include "ads_append.h"
 #include "ads_commute.h"
 
