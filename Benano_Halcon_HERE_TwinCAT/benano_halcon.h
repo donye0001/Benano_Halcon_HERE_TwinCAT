@@ -1,6 +1,6 @@
 #pragma once
-#include <HalconCpp.h>
 #include <Windows.h>
+#include <HalconCpp.h>
 #include "benano_init.h"
 
 void benanoStuff(HalconCpp::HTuple& socketData, HalconCpp::HTuple command, benano_scansdk::CScanManager& manager)

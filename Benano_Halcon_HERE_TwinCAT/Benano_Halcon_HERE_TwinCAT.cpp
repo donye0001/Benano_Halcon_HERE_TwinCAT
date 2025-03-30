@@ -1,11 +1,10 @@
-﻿#include <TcAdsDef.h>
-#include <TcAdsAPI.h>
-#include <HalconCpp.h>
-#include "benano_init.h"
+﻿#include "benano_init.h"
 #include "benano_halcon.h"
 #include "ads_append.h"
 #include "ads_commute.h"
-
+#include <TcAdsDef.h>
+#include <TcAdsAPI.h>
+#include <HalconCpp.h>
 
 namespace benano = benano_scansdk;
 namespace halcon = HalconCpp;

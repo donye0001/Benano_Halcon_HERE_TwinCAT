@@ -1,7 +1,8 @@
 #pragma once
+#include <Windows.h>
 #include <ScanSDK/BnScanSDK.h>
 #include <iostream>
-#include <Windows.h>
+
 
 void loadBenanoDll()
 {
