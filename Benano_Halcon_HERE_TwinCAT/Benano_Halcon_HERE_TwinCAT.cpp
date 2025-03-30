@@ -2,7 +2,7 @@
 #include <TcAdsAPI.h>
 #include <HalconCpp.h>
 #include "benano_init.h"
-#include "benano_halcon.h"
+#include "benano_halco
 #include "ads_append.h"
 #include "ads_commute.h"
 
