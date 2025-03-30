@@ -1,6 +1,6 @@
 ﻿#include <TcAdsDef.h>
 #include <TcAdsAPI.h>
-#include <HalconCpp.h>
+#include <HalconCp
 #include "benano_init.h"
 #include "benano_halco
 #include "ads_append.h"
