@@ -6,14 +6,27 @@
 #include <TcAdsAPI.h>
 #include <HalconCpp.h>
 
+ads::AdsCommute commute;
+ads::Linear linear;
+
 namespace benano = benano_scansdk;
 namespace halcon = HalconCpp;
 
 int main()
 {
+	double temp_position[6] = { 0 };
+	double delta = 0;
+
+	//確認輸入的port
+	if (!commute.isOpened()) {
+		system("pause");
+		return 1;
+	}
+
+	commute.setTargetAddress(851);
+
 	loadBenanoDll();
 	//TODO: Connect TwinCAT
-
 
 	// Connect Benano
 	benano::CScanManager camManager = initCameraManager(benano::eSDKMovableDeviceType::SDK_NoDevice);
