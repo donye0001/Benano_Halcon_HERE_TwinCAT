@@ -4,7 +4,6 @@
 #include <Windows.h>
 
 #include "ads_coordinate.h"
-
 #include <TcAdsDef.h>
 #include <TcAdsAPI.h>
 
