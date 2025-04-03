@@ -140,8 +140,6 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>$(CoreLibraryDependencies);C:\TwinCAT\AdsApi\TcAdsDll\x64\lib\TcAdsDll.lib</AdditionalDependencies>
-      <AdditionalDependencies>$(CoreLibraryDependencies);‪C:\TwinCAT\AdsApi\TcAdsDll\x64\lib\TcAdsDll.lib</AdditionalDependencies>
-      <AdditionalDependencies>$(CoreLibraryDependencies);‪C:\TwinCAT\AdsApi\TcAdsDll\x64\lib\TcAdsDll.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
