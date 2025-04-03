@@ -4,8 +4,8 @@
 ads::AdsCommute::AdsCommute()
 {
     adsError = 0;
-    localAddr.netId = { 0, 0, 0, 0, 0, 0 };
-    localAddr.port = 0;
+    localAddr.netId = {192, 168, 1, 33, 1, 1};
+    localAddr.port = 851;
     targetAddr = localAddr;
     portOpened = false;
     targetIsSet = false;

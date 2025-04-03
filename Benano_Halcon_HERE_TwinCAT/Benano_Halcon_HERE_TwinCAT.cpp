@@ -9,15 +9,10 @@
 ads::AdsCommute commute;
 ads::Linear linear;
 
-
-
-
-
 namespace benano = benano_scansdk;
 namespace halcon = HalconCpp;
 
 int main()
-
 {
 	double temp_position[6] = { 0 };
 	double delta = 0;
@@ -27,11 +22,11 @@ int main()
 		system("pause");
 		return 1;
 	}
-
 	commute.setTargetAddress(851);
-	loadBenanoDll();
-		
 
+
+
+	loadBenanoDll();
 	//TODO: Connect TwinCAT
 
 	// Connect Benano
