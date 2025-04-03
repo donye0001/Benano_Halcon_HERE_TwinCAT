@@ -120,11 +120,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-<<<<<<< HEAD
       <AdditionalDependencies>halcon.lib;halconcpp.lib;TcAdsDll.lib;BenanoScanSDK.lib;%(AdditionalDependencies);‪C:\TwinCAT\AdsApi\TcAdsDll\x64\lib\TcAdsDll.lib</AdditionalDependencies>
-=======
       <AdditionalDependencies>halcon.lib;halconcpp.lib;TcAdsDll.lib;BenanoScanSDK.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
->>>>>>> 91856d4d76c4b199ad65a6b21919fb69e1a1f017
       <DelayLoadDLLs>BenanoScanSDK.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
