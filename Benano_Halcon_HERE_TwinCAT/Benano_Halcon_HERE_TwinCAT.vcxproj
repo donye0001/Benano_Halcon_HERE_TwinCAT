@@ -23,7 +23,7 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{e94a1ac7-0123-4ea9-9def-e4ed80921da9}</ProjectGuid>
     <RootNamespace>BenanoHalconHERETwinCAT</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -72,7 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ExternalIncludePath>$(HALCONROOT)\include;$(HALCONROOT)\include\halconcpp;C:\TwinCAT\AdsApi\TcAdsDll\Include;..\..\BenanoScanSDK\Include;$(ExternalIncludePath)</ExternalIncludePath>
-    <LibraryPath>$(HALCONROOT)\lib\$(HALCONARCH);C:\TwinCAT\AdsApi\TcAdsDll\Lib;..\..\BenanoScanSDK\Lib\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(HALCONROOT)\lib\$(HALCONARCH);C:\TwinCAT\AdsApi\TcAdsDll\x64\lib;..\..\BenanoScanSDK\Lib\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ExternalIncludePath>$(HALCONROOT)\include;$(HALCONROOT)\include\halconcpp;C:\TwinCAT\AdsApi\TcAdsDll\Include;..\..\BenanoScanSDK\Include;$(ExternalIncludePath)</ExternalIncludePath>
@@ -114,11 +114,17 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+<<<<<<< HEAD
       <AdditionalDependencies>halcon.lib;halconcpp.lib;TcAdsDll.lib;BenanoScanSDK.lib;%(AdditionalDependencies);‪C:\TwinCAT\AdsApi\TcAdsDll\x64\lib\TcAdsDll.lib</AdditionalDependencies>
+=======
+      <AdditionalDependencies>halcon.lib;halconcpp.lib;TcAdsDll.lib;BenanoScanSDK.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+>>>>>>> 91856d4d76c4b199ad65a6b21919fb69e1a1f017
       <DelayLoadDLLs>BenanoScanSDK.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>

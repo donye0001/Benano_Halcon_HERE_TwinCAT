@@ -6,13 +6,19 @@
 #include <TcAdsAPI.h>
 #include <HalconCpp.h>
 
+<<<<<<< HEAD
 ads::AdsCommute commute;
 ads::Linear linear;
+=======
+
+
+>>>>>>> 91856d4d76c4b199ad65a6b21919fb69e1a1f017
 
 namespace benano = benano_scansdk;
 namespace halcon = HalconCpp;
 
 int main()
+<<<<<<< HEAD
 {
 	double temp_position[6] = { 0 };
 	double delta = 0;
@@ -26,6 +32,10 @@ int main()
 	commute.setTargetAddress(851);
 
 	loadBenanoDll();
+=======
+{	
+	
+>>>>>>> 91856d4d76c4b199ad65a6b21919fb69e1a1f017
 	//TODO: Connect TwinCAT
 
 	// Connect Benano
