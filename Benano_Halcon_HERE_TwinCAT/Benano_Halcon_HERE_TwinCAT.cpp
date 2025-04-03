@@ -6,12 +6,15 @@
 #include <TcAdsAPI.h>
 #include <HalconCpp.h>
 
+
+
+
 namespace benano = benano_scansdk;
 namespace halcon = HalconCpp;
 
 int main()
-{
-	loadBenanoDll();
+{	
+	
 	//TODO: Connect TwinCAT
 
 
