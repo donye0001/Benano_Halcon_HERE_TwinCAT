@@ -18,12 +18,32 @@ int main()
 	double delta = 0;
 
 	//確認輸入的port
-	if (!commute.isOpened()) {
+	if (!commute.isOpened())
+	{
 		system("pause");
 		return 1;
 	}
 	commute.setTargetAddress(851);
-
+	while (1) 
+	{
+		//利用ads傳輸方程式係數與運行時間
+		linear.req.new_data = 1;
+		linear.req.fulltime = 10;
+		long adsError = 0;
+		adsError = commute.write(ads::index::group::MOTION, ads::index::motion_offset::LINEAR, linear);
+		if (adsError != 0) {
+			break; //--------error的處理方式還要再多思考
+		}
+		std::cout << "seud\n";
+		while (1)
+		{
+			if (linear.resp.arrive) break;
+			std::cout << "rost\n";
+			adsError = 0;
+			adsError = commute.read(ads::index::group::GET, ads::index::get_offset::ANGLE, linear);
+		}
+	}
+	
 
 
 	loadBenanoDll();
