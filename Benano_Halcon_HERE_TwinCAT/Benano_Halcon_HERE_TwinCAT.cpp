@@ -1,125 +1,128 @@
-﻿#include "benano_init.h"
-#include "benano_halcon.h"
-#include "ads_append.h"
+﻿#include "ads_append.h"
 #include "ads_commute.h"
 #include <TcAdsDef.h>
 #include <TcAdsAPI.h>
-#include <HalconCpp.h>
+#include "tcp_commute.h"
 
-ads::AdsCommute commute;
+//[HINT] 其實linear跟p_tcp是類似概念
+ads::AdsCommute c_ads;
+tcp::TcpCommute c_tcp;
 ads::Linear linear;
-
-namespace benano = benano_scansdk;
-namespace halcon = HalconCpp;
+tcp::TcpPackage p_tcp;
 
 int main()
 {
-	double temp_position[6] = { 0 };
-	double delta = 0;
-
-	//確認輸入的port
-	if (!commute.isOpened())
+	//**ADS
+	if (!c_ads.isOpened()) //確認輸入的port
 	{
 		system("pause");
 		return 1;
 	}
-	commute.setTargetAddress(851);
+	c_ads.setTargetAddress(851);
+	//ADS**
+
+	//**TCP
+	if (!c_tcp.initWinsock()) return 1;
+	SOCKET listenSocket = c_tcp.createListenSocket();
+	if (listenSocket == INVALID_SOCKET) return 1;
+	std::cout << "伺服器正在監聽埠 " << DEFAULT_PORT << "..." << std::endl;
+	SOCKET clientSocket = accept(listenSocket, NULL, NULL);
+	if (clientSocket == INVALID_SOCKET) {
+		std::cerr << "accept failed: " << WSAGetLastError() << std::endl;
+		c_tcp.cleanup(listenSocket, INVALID_SOCKET);
+		return 1;
+	}
+	std::cout << "客戶端已連接。" << std::endl;
+	//TCP**
+
+	// Loop for ADS and TCP
+	double temp_position[3];
+	char recvbuf[BUFFER_SIZE];
+	int recvbuflen = (int)p_tcp.callSize();
+	int tcpResult;
+
 	while (1) 
 	{
-		//利用ads傳輸方程式係數與運行時間
+	//傳送-ADS------------------------------------------------------------------------------------
 		linear.req.new_data = 1;
-		linear.req.fulltime = 10;
+		temp_position[0] = 100;
+		temp_position[1] = 300;
+		temp_position[2] = 100;
+		for (int i = 0; i < 3; i++)
+		{
+			linear.req.target_postion[i] = temp_position[i];
+		}
 		long adsError = 0;
-		adsError = commute.write(ads::index::group::MOTION, ads::index::motion_offset::LINEAR, linear);
-		if (adsError != 0) {
+		adsError = c_ads.write(ads::index::group::MOTION, ads::index::motion_offset::LINEAR, linear);
+		if (adsError != 0) 
+		{
 			break; //--------error的處理方式還要再多思考
 		}
-		std::cout << "seud\n";
-		while (1)
+
+	//傳送-TCP------------------------------------------------------------------------------------
+		p_tcp.tx = 'T';
+		p_tcp.moveMode = 1;
+		p_tcp.position[0] = 330;
+		p_tcp.position[1] = -150;
+		p_tcp.position[2] = 280;
+		p_tcp.position[3] = -42;
+		p_tcp.position[4] = 0.0;
+		p_tcp.position[5] = 45.0;
+		
+		p_tcp.serialize();
+		const char* data = p_tcp.getData();
+		size_t dataSize = p_tcp.getSize();
+		int sent = send(clientSocket, data, (int)dataSize, 0);
+		if (sent == SOCKET_ERROR) 
 		{
-			if (linear.resp.arrive) break;
-			std::cout << "rost\n";
-			adsError = 0;
-			adsError = commute.read(ads::index::group::GET, ads::index::get_offset::ANGLE, linear);
+			std::cerr << "send failed: " << WSAGetLastError() << std::endl;
+			break;
 		}
-	}
+		std::cout << "已發送 " << sent << " 位元組回給客戶端。\n";
+
+	//接收-ADS------------------------------------------------------------------------------------
+		adsError = 0;
+		adsError = c_ads.read(ads::index::group::GET, ads::index::get_offset::ANGLE, linear);
+		if (linear.resp.arrive)
+		{
+			std::cout << "send sucessfully\n";
+			linear.resp.arrive = false;
+		}
+
+	//接收-TCP------------------------------------------------------------------------------------
+		tcpResult = recv(clientSocket, recvbuf, recvbuflen, 0);
+		try 
+		{
+			p_tcp.deserialize(recvbuf, recvbuflen);
+			if (p_tcp.rx == 'C') 
+			{
+				std::cout << "收到來自軟體的資料：" << std::endl;
+				std::cout << "rx = " << p_tcp.rx << std::endl;
+				std::cout << "fullTime = " << p_tcp.fullTime << std::endl;
+				std::cout << "coeffCopy：" << std::endl;
+				for (int i = 0; i < 6; ++i)
+				{
+					for (int j = 0; j < 6; ++j)
+					{
+						std::cout << p_tcp.coeffCopy[i][j] << " ";
+					}
+					std::cout << std::endl;
+				}
+				std::cout << "收到位元組: " << recvbuflen << std::endl;
+			}
+		}
+		catch (const char* e)
+		{
+			std::cerr << "Deserialization error: " << e << std::endl;
+			break;
+		}
+	} // Loop for TCP and ADS
+
+	// CLOSE
+	shutdown(clientSocket, SD_SEND);
+	c_tcp.cleanup(listenSocket, clientSocket);
+
 	
-
-
-	loadBenanoDll();
-	//TODO: Connect TwinCAT
-
-	// Connect Benano
-	benano::CScanManager camManager = initCameraManager(benano::eSDKMovableDeviceType::SDK_NoDevice);
-	printCameraInfo(camManager);
-	benano::CScanCtrl& scanCtl = camManager.GetScanController();
-	benano::CLiveCtrl& liveCtl = camManager.GetLiveController();
-	benano::CParameterCtrl& paramCtl = camManager.GetParameterController();
-	// Set Parameters
-	liveCtl.SetBrightness(57);
-	liveCtl.SetCameraGain(0);
-	liveCtl.SetExposureMode(benano::eExposureMode::eExposureMode_Short);
-	liveCtl.InitialLive(benano::eLiveCtrlType::LiveCheckBrightness);
-	benano::CScanParam* scanParam = paramCtl.GetScanParam();
-	scanParam->SetScanMode(benano::eScanMode::eScanMode_Confirm);
-	scanParam->SetImagingMode(benano::eImagingMode::eImagingMode_Standard);
-	scanParam->SetEnableNormalCalculation(true);
-	scanParam->SetEnableOutputMesh(true);
-	scanParam->SetEnablePointCloudColorOutput(true);
-	scanParam->SetEnableRGBLight(true);
-	paramCtl.ApplyScanParam(scanParam);
-	benano::CPostProcessParam* postParam = paramCtl.GetPostProcessParam();
-	postParam->Data.bBottomLevel = true;
-	postParam->Data.bTopLevel = true;
-	postParam->Data.BottomLevel = 99.5f;
-	postParam->Data.TopLevel = 107.0f;
-	postParam->Data.bBaseCorrection = true;
-	postParam->Data.SmoothIteration = 3;
-	paramCtl.ApplyPostProcessParam(postParam);
-	benano::CAlgorithm3DParam* algoParam = paramCtl.GetAlgorithm3DParam();
-	paramCtl.ApplyAlgorithm3DParam(algoParam);
-
-	// TODO: Halcon socket server
-	// Command: Benano->1000~1999, TwinCAT->2000->2999
-	halcon::HTuple serverData, serverImage, socketData, sendFrom, sendTo, command;
-	halcon::OpenSocketAccept(3000, "protocol", "TCP4", &serverData);
-	std::cout << "[Info]Listening TCP4 port 3000\n";
-	halcon::SocketAcceptConnect(serverData, "true", &socketData);
-	std::cout << "[Info]Get clients\n";
-	while (true) {
-		try {
-			halcon::ReceiveData(socketData, "i", &command, &sendFrom);
-			std::cout << "[Info]Get command\n";
-			// TODO: Throw error or return error code
-			std::cout << command[0].ToTuple().TupleIsInt().I() << ' ' << command.I() << std::endl;
-			if (command[0].ToTuple().TupleIsInt().I()) {
-				int cmd = command.I();
-				if (cmd >= 1000 && cmd < 2000)
-					benanoStuff(socketData, command, camManager);
-				// REMIND: TwinCAT指令接收
-				//else if (cmd >= 2000 && cmd < 3000)
-				//	twincatStuff(socketData, command);
-			}
-		}
-		catch (halcon::HException ex) {
-			std::cerr << "[Error]Halcon: " << ex.ErrorMessage() << std::endl << std::endl;
-			if (ex.ErrorCode() == 5606) {  // Loss Socket Connection
-				break;
-			}
-		}
-		catch (std::exception ex) {
-			std::cerr << "[Error]Command " << command.ToString() << ": " << ex.what() << std::endl << std::endl;
-			break;
-		}
-		catch (...) {
-			// TODO: Return error code
-			std::cout << "[Error]Unknown\n\n";
-			break;
-		}
-	}
-
-	std::cout << "[Info]Close server\n";
-	halcon::CloseSocket(socketData);
 	system("PAUSE");
 }
 

@@ -145,6 +145,8 @@
   <ItemGroup>
     <ClCompile Include="AdsCommunity.cpp" />
     <ClCompile Include="Benano_Halcon_HERE_TwinCAT.cpp" />
+    <ClCompile Include="TakePhoto.cpp" />
+    <ClCompile Include="TcpCommunity.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ads.h" />
@@ -154,6 +156,7 @@
     <ClInclude Include="benano_halcon.h" />
     <ClInclude Include="benano_init.h" />
     <ClInclude Include="data.h" />
+    <ClInclude Include="tcp_commute.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
