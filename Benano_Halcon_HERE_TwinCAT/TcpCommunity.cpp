@@ -7,14 +7,10 @@
 #include <TcAdsAPI.h>
 #include "tcp_commute.h"
 
-bool tcp::TcpCommute::initWinsock() {
+
+bool tcp::TcpCommute::initializeWinsock() {
     WSADATA wsaData;
-    int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (result != 0) {
-        std::cerr << "WSAStartup failed: " << result << std::endl;
-        return false;
-    }
-    return true;
+    return WSAStartup(MAKEWORD(2, 2), &wsaData) == 0;
 }
 
 SOCKET tcp::TcpCommute::createListenSocket() {
@@ -25,45 +21,56 @@ SOCKET tcp::TcpCommute::createListenSocket() {
     hints.ai_protocol = IPPROTO_TCP;
     hints.ai_flags = AI_PASSIVE;
 
-    int res = getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);
-    if (res != 0) {
-        std::cerr << "getaddrinfo failed: " << res << std::endl;
-        WSACleanup();
+    if (getaddrinfo(NULL, DEFAULT_PORT, &hints, &result) != 0) {
+        std::cerr << "[TCP] getaddrinfo failed.\n";
         return INVALID_SOCKET;
     }
 
-    SOCKET listenSocket = socket(result->ai_family,
-                                result->ai_socktype,
-                                result->ai_protocol);
-
+    SOCKET listenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
     if (listenSocket == INVALID_SOCKET) {
-        std::cerr << "socket() failed: " << WSAGetLastError() << std::endl;
+        std::cerr << "[TCP] socket creation failed.\n";
         freeaddrinfo(result);
-        WSACleanup();
         return INVALID_SOCKET;
     }
 
-    res = bind(listenSocket, result->ai_addr, (int)result->ai_addrlen);
+    if (bind(listenSocket, result->ai_addr, (int)result->ai_addrlen) == SOCKET_ERROR) {
+        std::cerr << "[TCP] bind failed.\n";
+        freeaddrinfo(result);
+        closesocket(listenSocket);
+        return INVALID_SOCKET;
+    }
+
     freeaddrinfo(result);
-    if (res == SOCKET_ERROR) {
-        std::cerr << "bind failed: " << WSAGetLastError() << std::endl;
-        closesocket(listenSocket);
-        WSACleanup();
-        return INVALID_SOCKET;
-    }
 
-    res = listen(listenSocket, SOMAXCONN);
-    if (res == SOCKET_ERROR) {
-        std::cerr << "listen failed: " << WSAGetLastError() << std::endl;
+    if (listen(listenSocket, SOMAXCONN) == SOCKET_ERROR) {
+        std::cerr << "[TCP] listen failed.\n";
         closesocket(listenSocket);
-        WSACleanup();
         return INVALID_SOCKET;
     }
     return listenSocket;
 }
 
-void tcp::TcpCommute::cleanup(SOCKET listenSocket, SOCKET clientSocket) {
-    if (clientSocket != INVALID_SOCKET) closesocket(clientSocket);
-    if (listenSocket != INVALID_SOCKET) closesocket(listenSocket);
+void tcp::TcpCommute::addClientSocket(SOCKET clientSocket, WSAPOLLFD* fds, int& nfds) {
+    if (nfds < MAX_CLIENTS) {
+        fds[nfds].fd = clientSocket;
+        fds[nfds].events = POLLRDNORM;
+        nfds++;
+    }
+    else {
+        std::cerr << "[TCP] Too many clients.\n";
+        closesocket(clientSocket);
+    }
+}
+
+void tcp::TcpCommute::removeClient(WSAPOLLFD fds[], int& nfds, int index) {
+    closesocket(fds[index].fd);
+    for (int j = index; j < nfds - 1; j++)
+        fds[j] = fds[j + 1];
+    nfds--;
+}
+
+void tcp::TcpCommute::cleanup(WSAPOLLFD* fds, int nfds) {
+    for (int i = 0; i < nfds; i++)
+        closesocket(fds[i].fd);
     WSACleanup();
 }
