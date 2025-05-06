@@ -4,8 +4,8 @@
 ads::AdsCommute::AdsCommute()
 {
     adsError = 0;
-    localAddr.netId = { 0, 0, 0, 0, 0, 0 };
-    localAddr.port = 0;
+    localAddr.netId = {192, 168, 1, 33, 1, 1};
+    localAddr.port = 851;
     targetAddr = localAddr;
     portOpened = false;
     targetIsSet = false;
@@ -30,10 +30,10 @@ bool ads::AdsCommute::close()
         return true;
     }
 
-    std::cout << "Close ADS port: " << localAddr.port << '\n';
+    std::cout << "[ADS] Close ADS port: " << localAddr.port << '\n';
     adsError = AdsPortClose();
     if (adsError) {
-        std::cerr << "Error: ADS port close return: " << adsError << std::endl;
+        std::cerr << "[ADS] Error: ADS port close return: " << adsError << std::endl;
         return false;
     }
 
@@ -88,15 +88,15 @@ bool ads::AdsCommute::open()
         return true;
     }
 
-    std::cout << "Open ADS port: " << AdsPortOpen() << '\n';
+    std::cout << "[ADS] Open ADS port: " << AdsPortOpen() << '\n';
     adsError = AdsGetLocalAddress(&localAddr);
     if (adsError) {
         portOpened = false;
-        std::cerr << "Error: ADS get local address return: " << adsError << std::endl;
+        std::cerr << "[ADS] Error: ADS get local address return: " << adsError << std::endl;
         return false;
     }
 
-    std::cout << "Local ADS address:\n";
+    std::cout << "[ADS] Local ADS address:\n";
     printAddress(localAddr, "  ");
     portOpened = true;
 
@@ -106,12 +106,12 @@ bool ads::AdsCommute::open()
 void ads::AdsCommute::printAddress(const AmsAddr& address, const char* indent)
 {
     printNetID(address.netId, indent);
-    std::cout << indent << "Port: " << address.port << std::endl;
+    std::cout << indent << "[ADS] Port: " << address.port << std::endl;
 }
 
 void ads::AdsCommute::printNetID(const AmsNetId& netID, const char* prefix)
 {
-    std::cout << prefix << "NetID: ";
+    std::cout << prefix << "[ADS] NetID: ";
     for (char i = 0; i < 6; i++) {
         std::cout << (int)netID.b[i] << '.';
     }
@@ -138,7 +138,7 @@ bool ads::AdsCommute::setTargetAddress(unsigned short port, const char* netID)
         return false;
     }
 
-    if (netID == "local") {
+    if (netID == "[ADS] local") {
         targetAddr.netId = localAddr.netId;
     }
     else {

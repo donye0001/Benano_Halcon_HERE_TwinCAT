@@ -3,6 +3,7 @@
 #include <regex>
 #include <Windows.h>
 
+#include "ads.h"
 #include "ads_coordinate.h"
 
 #include <TcAdsDef.h>
