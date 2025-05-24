@@ -42,7 +42,7 @@ int main() {
     sockaddr_in serverAddr;
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = INADDR_ANY;
-    serverAddr.sin_port = htons(200); // ∫ ≈• port 8080
+    serverAddr.sin_port = htons(200); // ∫ ≈• port 200
 
     // ∏j©w socket
     if (bind(serverSocket, (sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
@@ -59,7 +59,7 @@ int main() {
         WSACleanup();
         return 1;
     }
-    std::cout << "[TCP] Server is listening on port 8080...\n";
+    std::cout << "[TCP] Server is listening on port 200...\n";
 
     std::vector<std::thread> clientThreads;
 
@@ -147,12 +147,13 @@ void HandleClient(SOCKET clientSocket)
             gzd.isTake = data.isTake;
             gzd.fullTime = data.fullTime;
             memcpy(gzd.coeffCopy, data.coeffCopy, sizeof(gzd.coeffCopy));
-
+   
             std::cout << "[TCP] Received from TwinCAT: " << data.rx << ", " << data.fullTime << "\n";
             for (int i = 0; i < 6; i++)
             {
+                std::cout << std::fixed << std::setprecision(2);
                 for (int j = 0; j < 6; j++)
-                    std::cout << gzd.coeffCopy[i][j] << " ";
+                    std::cout << std::setw(5) << std::right << gzd.coeffCopy[i][j] << " ";
                 std::cout << "\n";
             }
 

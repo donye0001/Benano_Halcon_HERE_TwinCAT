@@ -1,5 +1,6 @@
-//#include "tcp_new_package.h"
-//#include "tcp_new_commute.h"
+// 這不是靜態
+//#include "tcp_package.h"
+//#include "tcp_commute.h"
 //
 //// 處理單個 Client 的函數
 //void tcp::TcpCommute::HandleClient(SOCKET clientSocket) {
@@ -29,8 +30,8 @@
 //
 //            // 處理並準備回傳資料
 //            DataType11 transmission;
-//            transmission.tx = 'A';
-//            transmission.moveMod = data.fullTime + 1;
+//            transmission.tx = 'T';
+//            transmission.moveMode = data.fullTime + 1;
 //            transmission.position[0] = 500;
 //            transmission.position[1] = 0;
 //            transmission.position[2] = 485.55f;
@@ -40,15 +41,15 @@
 //            send(clientSocket, reinterpret_cast<char*>(&transmission), sizeof(DataType11), 0);
 //            break;
 //        }
-//        case 'B': { // DataType2
-//            DataType2 data;
-//            memcpy(&data, buffer, sizeof(DataType2));
-//            std::cout << "Received from Client 2: " << data.value1 << ", " << data.value2 << "\n";
+//        case 'G': { // DataType2
+//            DataType20 data;
+//            memcpy(&data, buffer, sizeof(DataType20));
+//            std::cout << "Received from Client 2: " << data.isOK << "\n";
 //
 //            // 回傳
-//            DataType2 response;
-//            response.identifier = 'B';
-//            response.value1 = data.value1 + 1.0f;
+//            DataType21 response;
+//            response.tx = 'G';
+//            response.isTouch;
 //            response.value2 = !data.value2;
 //            send(clientSocket, reinterpret_cast<char*>(&response), sizeof(DataType2), 0);
 //            break;
